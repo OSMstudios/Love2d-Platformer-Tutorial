@@ -37,7 +37,7 @@ function love.load()
   -- Create our player.
   player.img = love.graphics.newImage('assets/character_block.png')
 
-  world:add(player, 10, 10, player.img:getWidth(), player.img:getHeight())
+  world:add(player, player.x, player.y, player.img:getWidth(), player.img:getHeight())
 
   -- Draw a level
   world:add(ground, 0, 448, 640, 32)
