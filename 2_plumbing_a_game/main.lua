@@ -1,11 +1,10 @@
 -- Pull in the Bump library
 bump = require 'libs.bump.bump'
+-- Load up our levels using Simple Tiled Loader
+sti = require 'libs.sti.sti'
+
+
 world = nil -- storage place for bump
-
-
-ground = {
-  isGround = true
-}
 
 -- Setup a player object to hold an image and attach a physics object
 player = {
@@ -33,14 +32,16 @@ player = {
 function love.load()
   -- Setup bump
   world = bump.newWorld(16)  -- 16 is our tile size
+  map = sti("assets/levels/level_1.lua", { "bump" })
 
   -- Create our player.
   player.img = love.graphics.newImage('assets/character_block.png')
 
-  world:add(player, 10, 10, player.img:getWidth(), player.img:getHeight())
+  world:add(player, player.x, player.y, player.img:getWidth(), player.img:getHeight())
 
   -- Draw a level
-  world:add(ground, 0, 448, 640, 32)
+  map:bump_init(world)
+  -- world:add(ground, 0, 448, 640, 32)
 end
 
 function love.update(dt)
@@ -71,10 +72,10 @@ function love.update(dt)
   end
 
   for i=1, len do
-    if collisions[i].other.isGround then
+    --if collisions[i].other.isGround then
       player.hasReachedMax = false
       player.isGrounded = true
-    end
+    --end
   end
 end
 
@@ -85,6 +86,19 @@ function love.keypressed(key)
 end
 
 function love.draw(dt)
+  love.graphics.scale(3)
+  love.graphics.translate(-player.x, 0)
+
+  map:setDrawRange(player.x, 0, love.graphics.getWidth(), love.graphics.getHeight()) -- TODO: Store width, height so we don't call these functions over and over again
+
+  -- Draw the map and all objects within
+  map:draw()
+
+  -- Draw Collision Map (useful for debugging)
+  --love.graphics.setColor(255, 0, 0, 255)
+  --map:bump_draw()
+
+
   love.graphics.draw(player.img, player.x, player.y)
-  love.graphics.rectangle('fill', 0, 448, 640, 32)
+
 end

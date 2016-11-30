@@ -3,7 +3,11 @@ bump = require 'libs.bump.bump'
 world = nil -- storage place for bump
 
 
-ground = {
+ground_0 = {
+  isGround = true
+}
+
+ground_1 = {
   isGround = true
 }
 
@@ -24,7 +28,7 @@ player = {
   isGrounded = false, -- are we on the ground?
   hasReachedMax = false,  -- is this as high as we can go?
   jumpAcc = 500, -- how fast do we accelerate towards the top
-  jumpMaxSpeed = 9.5, -- our speed limit while jumping
+  jumpMaxSpeed = 11, -- our speed limit while jumping
 
   -- Here are some incidental storage areas
   img = nil -- store the sprite we'll be drawing
@@ -40,11 +44,18 @@ function love.load()
   world:add(player, player.x, player.y, player.img:getWidth(), player.img:getHeight())
 
   -- Draw a level
-  world:add(ground, 0, 448, 640, 32)
+  world:add(ground_0, 120, 360, 640, 16)
+  world:add(ground_1, 0, 448, 640, 32)
 end
 
 function love.update(dt)
-  player.x, player.y, collisions, len = world:move(player, player.x + player.xVelocity, player.y + player.yVelocity)
+
+  --[[
+  -- movement without any collision checks
+  player.x = player.x + player.xVelocity
+  player.y = player.y + player.yVelocity
+  ]]
+  local prevX, prevY = player.x, player.y
 
   -- Apply Friction
   player.xVelocity = player.xVelocity * (1 - math.min(dt * player.friction, 1))
@@ -70,8 +81,23 @@ function love.update(dt)
     player.isGrounded = false -- we are no longer in contact with the ground
   end
 
+  -- these store the location the player will arrive at should
+  local goalX = player.x + player.xVelocity
+  local goalY = player.y + player.yVelocity
+
+  player.filter = function(item, other)
+    local x, y, w, h = world:getRect(other)
+    if player.y + player.img:getHeight() <= y then
+      return 'slide'
+    end
+  end
+
+  player.x, player.y, collisions, len = world:move(player, goalX, goalY, player.filter)
   for i=1, len do
-    if collisions[i].other.isGround then
+    if collisions[i].touch.y > goalY then
+      player.hasReachedMax = true
+      player.isGrounded = false
+    elseif collisions[i].normal.y < 0 then
       player.hasReachedMax = false
       player.isGrounded = true
     end
@@ -87,4 +113,5 @@ end
 function love.draw(dt)
   love.graphics.draw(player.img, player.x, player.y)
   love.graphics.rectangle('fill', 0, 448, 640, 32)
+  love.graphics.rectangle('fill', 120, 360, 640, 16)
 end
