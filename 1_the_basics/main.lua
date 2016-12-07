@@ -49,12 +49,6 @@ function love.load()
 end
 
 function love.update(dt)
-
-  --[[
-  -- movement without any collision checks
-  player.x = player.x + player.xVelocity
-  player.y = player.y + player.yVelocity
-  ]]
   local prevX, prevY = player.x, player.y
 
   -- Apply Friction
@@ -85,19 +79,27 @@ function love.update(dt)
   local goalX = player.x + player.xVelocity
   local goalY = player.y + player.yVelocity
 
+  -- This "filters" out certain types of collisions so we only process what we care about.
   player.filter = function(item, other)
     local x, y, w, h = world:getRect(other)
-    if player.y + player.img:getHeight() <= y then
+    local px, py, pw, ph = world:getRect(item)
+    local playerBottom = py + ph
+    local otherBottom = y + h
+
+    if playerBottom <= y then -- bottom of player collides with top of platform.
       return 'slide'
     end
   end
 
+  -- Move the player while testing for collisions
   player.x, player.y, collisions, len = world:move(player, goalX, goalY, player.filter)
-  for i=1, len do
-    if collisions[i].touch.y > goalY then
-      player.hasReachedMax = true
+
+  -- Loop through those collisions to see if anything important is happening
+  for i, coll in ipairs(collisions) do
+    if coll.touch.y > goalY then  -- We touched below (remember that higher locations have lower y values) our intended target.
+      player.hasReachedMax = true -- this scenario does not occur in this demo
       player.isGrounded = false
-    elseif collisions[i].normal.y < 0 then
+    elseif coll.normal.y < 0 then
       player.hasReachedMax = false
       player.isGrounded = true
     end
@@ -105,6 +107,7 @@ function love.update(dt)
 end
 
 function love.keypressed(key)
+  -- I always like to have a quick way to exit the game when testing.
 	if key == "escape" then
 		love.event.push("quit")
 	end

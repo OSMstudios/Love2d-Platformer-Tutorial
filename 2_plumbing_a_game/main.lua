@@ -1,10 +1,15 @@
 -- Pull in the Bump library
 bump = require 'libs.bump.bump'
--- Load up our levels using Simple Tiled Loader
-sti = require 'libs.sti.sti'
-
-
 world = nil -- storage place for bump
+
+
+ground_0 = {
+  isGround = true
+}
+
+ground_1 = {
+  isGround = true
+}
 
 -- Setup a player object to hold an image and attach a physics object
 player = {
@@ -23,7 +28,7 @@ player = {
   isGrounded = false, -- are we on the ground?
   hasReachedMax = false,  -- is this as high as we can go?
   jumpAcc = 500, -- how fast do we accelerate towards the top
-  jumpMaxSpeed = 9.5, -- our speed limit while jumping
+  jumpMaxSpeed = 11, -- our speed limit while jumping
 
   -- Here are some incidental storage areas
   img = nil -- store the sprite we'll be drawing
@@ -32,7 +37,6 @@ player = {
 function love.load()
   -- Setup bump
   world = bump.newWorld(16)  -- 16 is our tile size
-  map = sti("assets/levels/level_1.lua", { "bump" })
 
   -- Create our player.
   player.img = love.graphics.newImage('assets/character_block.png')
@@ -40,12 +44,12 @@ function love.load()
   world:add(player, player.x, player.y, player.img:getWidth(), player.img:getHeight())
 
   -- Draw a level
-  map:bump_init(world)
-  -- world:add(ground, 0, 448, 640, 32)
+  world:add(ground_0, 120, 360, 640, 16)
+  world:add(ground_1, 0, 448, 640, 32)
 end
 
 function love.update(dt)
-  player.x, player.y, collisions, len = world:move(player, player.x + player.xVelocity, player.y + player.yVelocity)
+  local prevX, prevY = player.x, player.y
 
   -- Apply Friction
   player.xVelocity = player.xVelocity * (1 - math.min(dt * player.friction, 1))
@@ -71,11 +75,35 @@ function love.update(dt)
     player.isGrounded = false -- we are no longer in contact with the ground
   end
 
+  -- these store the location the player will arrive at should
+  local goalX = player.x + player.xVelocity
+  local goalY = player.y + player.yVelocity
+
+  player.filter = function(item, other)
+    local x, y, w, h = world:getRect(other)
+    local px, py, pw, ph = world:getRect(item)
+    local playerBottom = py + ph
+    local otherBottom = y + h
+
+    if playerBottom <= y then -- collide with top
+      return 'slide'
+    --[[elseif py >= otherBottom then
+      return nil -- no collision. We pass through the bottom of this platform
+    elseif math.max(playerBottom, otherBottom) - math.min(py, y) <= ph + h then
+      -- http://stackoverflow.com/questions/3269434/whats-the-most-efficient-way-to-test-two-integer-ranges-for-overlap
+      return 'bounce']]
+    end
+  end
+
+  player.x, player.y, collisions, len = world:move(player, goalX, goalY, player.filter)
   for i=1, len do
-    --if collisions[i].other.isGround then
+    if collisions[i].touch.y > goalY and collisions[i].type == 'bounce' then
+      player.hasReachedMax = true
+      player.isGrounded = false
+    elseif collisions[i].normal.y < 0 then
       player.hasReachedMax = false
       player.isGrounded = true
-    --end
+    end
   end
 end
 
@@ -86,19 +114,7 @@ function love.keypressed(key)
 end
 
 function love.draw(dt)
-  love.graphics.scale(3)
-  love.graphics.translate(-player.x, 0)
-
-  map:setDrawRange(player.x, 0, love.graphics.getWidth(), love.graphics.getHeight()) -- TODO: Store width, height so we don't call these functions over and over again
-
-  -- Draw the map and all objects within
-  map:draw()
-
-  -- Draw Collision Map (useful for debugging)
-  --love.graphics.setColor(255, 0, 0, 255)
-  --map:bump_draw()
-
-
   love.graphics.draw(player.img, player.x, player.y)
-
+  love.graphics.rectangle('fill', 0, 448, 640, 32)
+  love.graphics.rectangle('fill', 120, 360, 640, 16)
 end
