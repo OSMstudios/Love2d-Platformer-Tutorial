@@ -3,13 +3,8 @@ bump = require 'libs.bump.bump'
 world = nil -- storage place for bump
 
 
-ground_0 = {
-  isGround = true
-}
-
-ground_1 = {
-  isGround = true
-}
+ground_0 = {}
+ground_1 = {}
 
 -- Setup a player object to hold an image and attach a physics object
 player = {
@@ -115,6 +110,6 @@ end
 
 function love.draw(dt)
   love.graphics.draw(player.img, player.x, player.y)
-  love.graphics.rectangle('fill', 0, 448, 640, 32)
-  love.graphics.rectangle('fill', 120, 360, 640, 16)
+  love.graphics.rectangle('fill', world:getRect(ground_0))
+  love.graphics.rectangle('fill', world:getRect(ground_1))
 end
