@@ -16,3 +16,6 @@
 [submodule "2_plumbing_a_game/libs/sti"]
 	path = 2_plumbing_a_game/libs/sti
 	url = git@github.com:karai17/Simple-Tiled-Implementation.git
+[submodule "2_plumbing_a_game/libs/hump"]
+	path = 2_plumbing_a_game/libs/hump
+	url = git@github.com:vrld/hump.git

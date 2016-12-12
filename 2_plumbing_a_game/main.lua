@@ -1,54 +1,29 @@
 -- Pull in the Bump library
 bump = require 'libs.bump.bump'
-world = nil -- storage place for bump
 
+-- Pull in Gamestate from the HUMP library
+Gamestate = require 'libs.hump.gamestate'
 
-ground_0 = {
-  isGround = true
-}
+-- Let's add some awesome debugging tools
+require 'libs.tableutils' -- some table management functions
+                     -- one of which allows us to print tables
+lovebird = require 'libs.lovebird.lovebird'
 
-ground_1 = {
-  isGround = true
-}
+-- Pull in each of our game states
+--local mainMenu = require 'gamestates.mainmenu'
+local gameLevel1 = require 'gamestates.gameLevel1'
 
--- Setup a player object to hold an image and attach a physics object
-player = {
-  x = 16,
-  y = 16,
-  -- The first set of values are for our rudimentary physics system
-  xVelocity = 0, -- current velocity on x, y axes
-  yVelocity = 0,
-  acc = 100, -- the acceleration of our player
-  maxSpeed = 600, -- the top speed
-  friction = 20, -- slow our player down - we could toggle this situationally to create icy or slick platforms
-  gravity = 80, -- we will accelerate towards the bottom
-
-  -- These are values applying specifically to jumping
-  isJumping = false, -- are we in the process of jumping?
-  isGrounded = false, -- are we on the ground?
-  hasReachedMax = false,  -- is this as high as we can go?
-  jumpAcc = 500, -- how fast do we accelerate towards the top
-  jumpMaxSpeed = 11, -- our speed limit while jumping
-
-  -- Here are some incidental storage areas
-  img = nil -- store the sprite we'll be drawing
-}
 
 function love.load()
-  -- Setup bump
-  world = bump.newWorld(16)  -- 16 is our tile size
-
-  -- Create our player.
-  player.img = love.graphics.newImage('assets/character_block.png')
-
-  world:add(player, player.x, player.y, player.img:getWidth(), player.img:getHeight())
-
-  -- Draw a level
-  world:add(ground_0, 120, 360, 640, 16)
-  world:add(ground_1, 0, 448, 640, 32)
+  Gamestate.registerEvents()
+  Gamestate.switch(gameLevel1)
 end
 
 function love.update(dt)
+  lovebird.update()
+end
+
+--[[
   local prevX, prevY = player.x, player.y
 
   -- Apply Friction
@@ -91,7 +66,7 @@ function love.update(dt)
       return nil -- no collision. We pass through the bottom of this platform
     elseif math.max(playerBottom, otherBottom) - math.min(py, y) <= ph + h then
       -- http://stackoverflow.com/questions/3269434/whats-the-most-efficient-way-to-test-two-integer-ranges-for-overlap
-      return 'bounce']]
+      return 'bounce'
     end
   end
 
@@ -118,3 +93,4 @@ function love.draw(dt)
   love.graphics.rectangle('fill', 0, 448, 640, 32)
   love.graphics.rectangle('fill', 120, 360, 640, 16)
 end
+]]
