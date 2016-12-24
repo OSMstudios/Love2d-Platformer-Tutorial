@@ -108,7 +108,7 @@ function love.keypressed(key)
 	end
 end
 
-function love.draw(dt)
+function love.draw()
   love.graphics.draw(player.img, player.x, player.y)
   love.graphics.rectangle('fill', world:getRect(ground_0))
   love.graphics.rectangle('fill', world:getRect(ground_1))

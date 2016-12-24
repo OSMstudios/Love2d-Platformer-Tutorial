@@ -1,46 +1,34 @@
 bump = require 'libs.bump.bump'
 
+local Entities = require 'entities.Entities'
+local Entity = require 'entities.Entity'
+
 local gameLevel1 = {}
+local Player = require 'entities.player'
+local Ground = require 'entities.ground'
+
+player = nil
+world = nil
 
 function gameLevel1:enter()
-  ground_0 = {}
-  ground_1 = {}
+  print('gameLevel1 enter')
 
-  -- Setup a player object to hold an image and attach a physics object
-  player = {
-    x = 16,
-    y = 16,
-    -- The first set of values are for our rudimentary physics system
-    xVelocity = 0, -- current velocity on x, y axes
-    yVelocity = 0,
-    acc = 100, -- the acceleration of our player
-    maxSpeed = 600, -- the top speed
-    friction = 20, -- slow our player down - we could toggle this situationally to create icy or slick platforms
-    gravity = 80, -- we will accelerate towards the bottom
-
-    -- These are values applying specifically to jumping
-    isJumping = false, -- are we in the process of jumping?
-    isGrounded = false, -- are we on the ground?
-    hasReachedMax = false,  -- is this as high as we can go?
-    jumpAcc = 500, -- how fast do we accelerate towards the top
-    jumpMaxSpeed = 11, -- our speed limit while jumping
-
-    -- Here are some incidental storage areas
-    img = nil -- store the sprite we'll be drawing
-  }
-
+  -- Game Levels do need collisions.
   world = bump.newWorld(16)
-  -- Create our player.
-  player.img = love.graphics.newImage('assets/character_block.png')
+  Entities:enter(world, nil)
 
-  world:add(player, player.x, player.y, player.img:getWidth(), player.img:getHeight())
+  player = Player(world, 16, 16)
+  ground_0 = Ground(world, 120, 360, 640, 16)
+  ground_1 = Ground(world, 0, 448, 640, 16)
 
-  -- Draw a level
-  world:add(ground_0, 120, 360, 640, 16)
-  world:add(ground_1, 0, 448, 640, 32)
+  Entities:addMany({player, ground_0, ground_1})
 end
 
 function gameLevel1:update(dt)
+  Entities:update(dt)
+
+  --[[
+
   local prevX, prevY = player.x, player.y
 
   -- Apply Friction
@@ -85,7 +73,7 @@ function gameLevel1:update(dt)
       elseif math.max(playerBottom, otherBottom) - math.min(py, y) <= ph + h then
         -- http://stackoverflow.com/questions/3269434/whats-the-most-efficient-way-to-test-two-integer-ranges-for-overlap
         return 'bounce'
-      end]]
+      end
     end
   end
 
@@ -101,13 +89,11 @@ function gameLevel1:update(dt)
       player.hasReachedMax = false
       player.isGrounded = true
     end
-  end
+  end]]
 end
 
 function gameLevel1:draw()
-  love.graphics.draw(player.img, player.x, player.y)
-  love.graphics.rectangle('fill', world:getRect(ground_0))
-  love.graphics.rectangle('fill', world:getRect(ground_1))
+  Entities:draw()
 end
 
 
