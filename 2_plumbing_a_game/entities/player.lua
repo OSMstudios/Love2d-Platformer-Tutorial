@@ -41,6 +41,24 @@ function player:collisionFilter(other)
   end
 end
 
+--[[
+player.filter = function(item, other)
+  local x, y, w, h = world:getRect(other)
+  local px, py, pw, ph = world:getRect(item)
+  local playerBottom = py + ph
+  local otherBottom = y + h
+
+  if playerBottom <= y then -- collide with top
+    return 'slide'
+  --[[elseif py >= otherBottom then
+    return nil -- no collision. We pass through the bottom of this platform
+  elseif math.max(playerBottom, otherBottom) - math.min(py, y) <= ph + h then
+    -- http://stackoverflow.com/questions/3269434/whats-the-most-efficient-way-to-test-two-integer-ranges-for-overlap
+    return 'bounce'
+  end
+end
+]]
+
 function player:update(dt)
   local prevX, prevY = self.x, self.y
 
