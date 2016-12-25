@@ -1,9 +1,10 @@
 bump = require 'libs.bump.bump'
+Gamestate = require 'libs.hump.gamestate'
 
 local Entities = require 'entities.Entities'
 local Entity = require 'entities.Entity'
 
-local gameLevel1 = {}
+local gameLevel1 = Gamestate.new()
 local Player = require 'entities.player'
 local Ground = require 'entities.ground'
 

@@ -10,9 +10,9 @@ require 'libs.tableutils' -- some table management functions
 lovebird = require 'libs.lovebird.lovebird'
 
 -- Pull in each of our game states
---local mainMenu = require 'gamestates.mainmenu'
+local mainMenu = require 'gamestates.mainmenu'
 local gameLevel1 = require 'gamestates.gameLevel1'
-
+local pause = require 'gamestates.pause'
 
 function love.load()
   Gamestate.registerEvents()
@@ -21,6 +21,16 @@ end
 
 function love.update(dt)
   lovebird.update()
+end
+
+function love.keypressed(key)
+  if key == "escape" then
+		love.event.push("quit")
+	end
+
+  if Gamestate.current() ~= mainMenu and Gamestate.current() ~= pause and key == 'p' then
+    Gamestate.push(pause)
+  end
 end
 
 --[[
