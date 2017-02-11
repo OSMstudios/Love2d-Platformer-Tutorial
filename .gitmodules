@@ -1,21 +1,18 @@
-[submodule "2_plumbing_a_game/libs/middleclass"]
-	path = 2_plumbing_a_game/libs/middleclass
-	url = git@github.com:kikito/middleclass.git
-[submodule "2_plumbing_a_game/libs/anim8"]
-	path = 2_plumbing_a_game/libs/anim8
-	url = git@github.com:kikito/anim8.git
-[submodule "2_plumbing_a_game/libs/lovebird"]
-	path = 2_plumbing_a_game/libs/lovebird
-	url = git@github.com:rxi/lovebird.git
 [submodule "1_the_basics/libs/bump"]
 	path = 1_the_basics/libs/bump
 	url = git@github.com:kikito/bump.lua.git
 [submodule "2_plumbing_a_game/libs/bump"]
 	path = 2_plumbing_a_game/libs/bump
 	url = git@github.com:kikito/bump.lua.git
-[submodule "2_plumbing_a_game/libs/sti"]
-	path = 2_plumbing_a_game/libs/sti
-	url = git@github.com:karai17/Simple-Tiled-Implementation.git
 [submodule "2_plumbing_a_game/libs/hump"]
 	path = 2_plumbing_a_game/libs/hump
+	url = git@github.com:vrld/hump.git
+[submodule "3_making_levels/libs/sti"]
+	path = 3_making_levels/libs/sti
+	url = git@github.com:karai17/Simple-Tiled-Implementation.git
+[submodule "3_making_levels/libs/bump"]
+	path = 3_making_levels/libs/bump
+	url = git@github.com:kikito/bump.lua.git
+[submodule "3_making_levels/libs/hump"]
+	path = 3_making_levels/libs/hump
 	url = git@github.com:vrld/hump.git

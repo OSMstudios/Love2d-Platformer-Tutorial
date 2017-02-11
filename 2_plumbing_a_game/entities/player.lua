@@ -1,9 +1,11 @@
-local Class = require 'libs.middleclass.middleclass'
+local Class = require 'libs.hump.class'
 local Entity = require 'entities.Entity'
 
-local player = Class('player', Entity)
+local player = Class{
+  __includes = Entity -- Player class inherits our Entity class
+}
 
-function player:initialize(world, x, y)
+function player:init(world, x, y)
   self.world = world
   self.x = x
   self.y = y

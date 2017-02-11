@@ -1,9 +1,11 @@
-local Class = require 'libs.middleclass.middleclass'
+local Class = require 'libs.hump.class'
 local Entity = require 'entities.Entity'
 
-local Ground = Class('Ground', Entity)
+local Ground = Class{
+  __includes = Entity -- Ground class inherits our Entity class
+}
 
-function Ground:initialize(world, x, y, w, h)
+function Ground:init(world, x, y, w, h)
   print('ground initialized')
 
   self.world = world
@@ -12,7 +14,6 @@ function Ground:initialize(world, x, y, w, h)
   self.w = w
   self.h = h
 
-  print(self)
   self.world:add(self, self:getRect())
 end
 

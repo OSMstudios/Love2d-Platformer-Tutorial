@@ -1,12 +1,14 @@
 -- Represents a single drawable object
-local Class = require 'libs.middleclass.middleclass'
+local Class = require 'libs.hump.class'
 
-local Entity = Class('Entity')
+local Entity = Class{}
 
--- Entities must have a :initialize, :draw, :update
-function Entity:initialize(x, y)
+function Entity:init(world, x, y, w, h)
+  self.world = world
   self.x = x
   self.y = y
+  self.w = w
+  self.h = h
 end
 
 function Entity:getRect()
@@ -14,11 +16,11 @@ function Entity:getRect()
 end
 
 function Entity:draw()
-  -- Do nothing by default
+  -- Do nothing by default, but we still have to have something to call
 end
 
 function Entity:update(dt)
-
+  -- Do nothing by default, but we still have to have something to call
 end
 
 return Entity
