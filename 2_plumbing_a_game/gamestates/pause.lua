@@ -1,7 +1,7 @@
 pause = Gamestate.new()
 
 function pause:enter(from)
-    self.from = from -- record previous state
+  self.from = from -- record previous state
 end
 
 function pause:draw()

@@ -6,19 +6,13 @@ local Ground = Class{
 }
 
 function Ground:init(world, x, y, w, h)
-  print('ground initialized')
-
-  self.world = world
-  self.x = x
-  self.y = y
-  self.w = w
-  self.h = h
+  Entity.init(self, world, x, y, w, h)
 
   self.world:add(self, self:getRect())
 end
 
 function Ground:draw()
-  love.graphics.rectangle('fill', self.x, self.y, self.w, self.h)
+  love.graphics.rectangle('fill', self:getRect())
 end
 
 return Ground
