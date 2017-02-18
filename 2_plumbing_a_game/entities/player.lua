@@ -6,9 +6,9 @@ local player = Class{
 }
 
 function player:init(world, x, y)
-  self.world = world
-  self.x = x
-  self.y = y
+  self.img = love.graphics.newImage('/assets/character_block.png')
+
+  Entity.init(self, world, x, y, self.img:getWidth(), self.img:getHeight())
 
   -- Add our unique player values
   self.xVelocity = 0 -- current velocity on x, y axes
@@ -24,11 +24,6 @@ function player:init(world, x, y)
   self.hasReachedMax = false  -- is this as high as we can go?
   self.jumpAcc = 500 -- how fast do we accelerate towards the top
   self.jumpMaxSpeed = 11 -- our speed limit while jumping
-
-  self.img = love.graphics.newImage('/assets/character_block.png')
-
-  self.w = self.img:getWidth()
-  self.h = self.img:getHeight()
 
   self.world:add(self, self:getRect())
 end
