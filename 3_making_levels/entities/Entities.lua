@@ -3,13 +3,16 @@
 
 local Entities = {
 	active = true,
+	map = nil,
+	world = nil,
 	entityList = {}
 }
 
-function Entities:enter(world)
+function Entities:enter(world, map)
   self:clear()
 
   self.world = world
+  self.map = map
 end
 
 function Entities:add(entity)
@@ -36,10 +39,21 @@ function Entities:removeAt(index)
 end
 
 function Entities:clear()
+	self.map = nil
+	self.world = nil
 	self.entityList = {}
 end
 
 function Entities:draw()
+	if self.map ~= nil then
+		local camWorldWidth = love.graphics.getWidth() / cam.scale
+		local camWorldHeight = love.graphics.getHeight() / cam.scale
+		local camWorldX = cam.x - (camWorldWidth / 2)
+		local camWorldY = cam.y - (camWorldHeight / 2)
+		self.map:setDrawRange(camWorldX, camWorldY, love.graphics.getWidth(), love.graphics.getHeight())
+		self.map:draw()
+	end
+	
 	for i, e in ipairs(self.entityList) do
 		e:draw(i)
 	end
