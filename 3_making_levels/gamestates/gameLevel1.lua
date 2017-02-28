@@ -1,5 +1,4 @@
 -- Import our libraries.
-local bump = require 'libs.bump.bump'
 local Gamestate = require 'libs.hump.gamestate'
 local Class = require 'libs.hump.class'
 
@@ -12,6 +11,8 @@ local Entities = require 'entities.Entities'
 -- Import the Entities we will build.
 local Player = require 'entities.player'
 
+-- Declare a couple immportant variables
+player = nil
 
 local gameLevel1 = Class{
   __includes = LevelBase
@@ -22,18 +23,21 @@ function gameLevel1:init()
 end
 
 function gameLevel1:enter()
+  Entities:enter()
 
-
-  --Entities:enter()
+  player = Player(self.world,  16, 16)
+  Entities:add(player)
 end
 
 function gameLevel1:update(dt)
-  LevelBase.update(self, dt)
+  self.map:update(dt) -- remember, we inherited map from LevelBase
   Entities:update(dt) -- this executes the update function for each individual Entity
 end
 
 function gameLevel1:draw()
-  LevelBase.draw(self)
+  love.graphics.scale(3, 3) -- make this big! 3 times bigger
+
+  self.map:draw() -- Remember that we inherited map from LevelBase
   Entities:draw() -- this executes the draw function for each individual Entity
 end
 

@@ -1,6 +1,7 @@
 -- Each level will inherit from this class which itself inherits from Gamestate.
 -- This class is Gamestate but with function for loading up Tiled maps.
 
+local bump = require 'libs.bump.bump'
 local Gamestate = require 'libs.hump.gamestate'
 local Class = require 'libs.hump.class'
 
@@ -14,14 +15,7 @@ function LevelBase:init(mapFile)
   print('LevelBase init')
 
   self.map = sti(mapFile, { "bump" })
-end
-
-function LevelBase:draw()
-  self.map:draw()
-end
-
-function LevelBase:update(dt)
-  self.map:update(dt)
+  self.world = bump.newWorld(16)
 end
 
 -- All levels will have a pause menu
