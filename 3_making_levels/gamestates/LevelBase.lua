@@ -12,10 +12,10 @@ local LevelBase = Class{
 }
 
 function LevelBase:init(mapFile)
-  print('LevelBase init')
-
   self.map = sti(mapFile, { "bump" })
   self.world = bump.newWorld(16)
+
+  self.map:bump_init(self.world)
 end
 
 -- All levels will have a pause menu

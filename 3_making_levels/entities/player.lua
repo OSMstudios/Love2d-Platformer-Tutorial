@@ -13,17 +13,17 @@ function player:init(world, x, y)
   -- Add our unique player values
   self.xVelocity = 0 -- current velocity on x, y axes
   self.yVelocity = 0
-  self.acc = 100 -- the acceleration of our player
-  self.maxSpeed = 600 -- the top speed
-  self.friction = 20 -- slow our player down - we could toggle this situationally to create icy or slick platforms
-  self.gravity = 80 -- we will accelerate towards the bottom
+  self.acc = 33 -- the acceleration of our player
+  self.maxSpeed = 100 -- the top speed
+  self.friction = 7 -- slow our player down - we could toggle this situationally to create icy or slick platforms
+  self.gravity = 22 -- we will accelerate towards the bottom
 
     -- These are values applying specifically to jumping
   self.isJumping = false -- are we in the process of jumping?
   self.isGrounded = false -- are we on the ground?
   self.hasReachedMax = false  -- is this as high as we can go?
-  self.jumpAcc = 500 -- how fast do we accelerate towards the top
-  self.jumpMaxSpeed = 11 -- our speed limit while jumping
+  self.jumpAcc = 180 -- how fast do we accelerate towards the top
+  self.jumpMaxSpeed = 4 -- our speed limit while jumping
 
   self.world:add(self, self:getRect())
 end
@@ -33,9 +33,9 @@ function player:collisionFilter(other)
   local playerBottom = self.y + self.h
   local otherBottom = y + h
 
-  if playerBottom <= y then -- bottom of player collides with top of platform.
+  --if playerBottom <= y then -- bottom of player collides with top of platform.
     return 'slide'
-  end
+  --end
 end
 
 --[[
