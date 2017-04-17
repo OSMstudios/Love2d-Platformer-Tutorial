@@ -3,6 +3,7 @@
 
 local bump = require 'libs.bump.bump'
 local Gamestate = require 'libs.hump.gamestate'
+local Camera = require 'libs.hump.camera'
 local Class = require 'libs.hump.class'
 
 local sti = require 'libs.sti.sti'
@@ -12,6 +13,7 @@ local LevelBase = Class{
 }
 
 function LevelBase:init(mapFile)
+  self.cam = Camera(0, 0, 3) -- place in a neutral position and zoom 3 times
   self.map = sti(mapFile, { "bump" })
   self.world = bump.newWorld(16)
 

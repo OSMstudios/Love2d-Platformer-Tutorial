@@ -53,7 +53,7 @@ function Entities:draw()
 		self.map:setDrawRange(camWorldX, camWorldY, love.graphics.getWidth(), love.graphics.getHeight())
 		self.map:draw()
 	end
-	
+
 	for i, e in ipairs(self.entityList) do
 		e:draw(i)
 	end
@@ -63,6 +63,18 @@ function Entities:update(dt)
 	for i, e in ipairs(self.entityList) do
 		e:update(dt, i)
 	end
+end
+
+function Entities:keypressed(key)
+  for i, e in ipairs(self.entityList) do
+    e:keypressed(key)
+  end
+end
+
+function Entities:keyreleased(key)
+  for i, e in ipairs(self.entityList) do
+    e:keyreleased(key)
+  end
 end
 
 return Entities

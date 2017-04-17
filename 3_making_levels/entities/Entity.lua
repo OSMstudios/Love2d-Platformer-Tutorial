@@ -23,4 +23,12 @@ function Entity:update(dt)
   -- Do nothing by default, but we still have to have something to call
 end
 
+function Entity:keypressed(key)
+  -- Do nothing by default, but we still have to have something to call
+end
+
+function Entity:keyreleased(key)
+  -- Do nothing by default, but we still have to have something to call
+end
+
 return Entity

@@ -5,25 +5,36 @@ local player = Class{
   __includes = Entity -- Player class inherits our Entity class
 }
 
+-- Enumeration isn't technically supported in lua, but this approach
+-- has a similar outcome.
+local PlayerStates = {
+  Idle = 0,
+  Walking = 1,
+  Running = 2,
+  Jumping = 3,
+  Dead = 4
+}
+
 function player:init(world, x, y)
+  self.state = PlayerStates.Idle
   self.img = love.graphics.newImage('/assets/character_block.png')
 
   Entity.init(self, world, x, y, self.img:getWidth(), self.img:getHeight())
 
   -- Add our unique player values
+  self.xRelativeVelocity = 0
   self.xVelocity = 0 -- current velocity on x, y axes
   self.yVelocity = 0
-  self.acc = 33 -- the acceleration of our player
+  self.acc = 500 -- the acceleration of our player
+  self.brakeAccel = 500
   self.maxSpeed = 100 -- the top speed
-  self.friction = 7 -- slow our player down - we could toggle this situationally to create icy or slick platforms
-  self.gravity = 22 -- we will accelerate towards the bottom
+  self.gravity = 650 -- we will accelerate towards the bottom
 
-    -- These are values applying specifically to jumping
-  self.isJumping = false -- are we in the process of jumping?
-  self.isGrounded = false -- are we on the ground?
-  self.hasReachedMax = false  -- is this as high as we can go?
-  self.jumpAcc = 180 -- how fast do we accelerate towards the top
-  self.jumpMaxSpeed = 4 -- our speed limit while jumping
+  -- These are values applying specifically to jumping
+  self.jumpStartY = y
+  self.jumpImpulse = 250
+  self.jumpMaxHeight = 64 -- pixels
+  self.jumpCurrentImpulse = 0
 
   self.world:add(self, self:getRect())
 end
@@ -56,50 +67,129 @@ player.filter = function(item, other)
 end
 ]]
 
-function player:update(dt)
-  local prevX, prevY = self.x, self.y
+function player:changeVelocityByCollisionNormal(col)
+  local other, normal = col.other, col.normal
+  local nx, ny        = normal.x, normal.y
+  local vx, vy        = self.xVelocity, self.yVelocity
 
-  -- Apply Friction
-  self.xVelocity = self.xVelocity * (1 - math.min(dt * self.friction, 1))
-  self.yVelocity = self.yVelocity * (1 - math.min(dt * self.friction, 1))
+  if other.xVelocity and ((nx < 0 and vx > 0) or (nx > 0 and vx < 0)) then
+    self.xVelocity = other.xVelocity
+    self.xRelativeVelocity  = other.xVelocity
+  end
 
-  -- Apply gravity
-  self.yVelocity = self.yVelocity + self.gravity * dt
+  if other.yVelocity and ((ny < 0 and vy > 0) or (ny > 0 and vy < 0)) then
+    self.yVelocity = math.max(0, other.yVelocity)
+  end
+end
 
-	if love.keyboard.isDown("left", "a") and self.xVelocity > -self.maxSpeed then
-		self.xVelocity = self.xVelocity - self.acc * dt
+function player:setGround(other)
+  self.state = PlayerStates.Idle
+  self.ground = other
+  self.y      = self.ground.y - self.h
+  self.world:update(self, self.x, self.y)
+end
+
+function player:checkIfOnGround(ny, other)
+  if ny < 0 then
+    self.ground = other
+  end
+end
+
+function player:playerInput(dt)
+  -- Do xVelocity logic
+  local vx = self.xRelativeVelocity
+
+  if love.keyboard.isDown("left", "a") and self.xVelocity > -self.maxSpeed then
+		vx = self.xVelocity - self.acc * dt
 	elseif love.keyboard.isDown("right", "d") and self.xVelocity < self.maxSpeed then
-		self.xVelocity = self.xVelocity + self.acc * dt
+		vx = self.xVelocity + self.acc * dt
+  else
+    local brake = dt * (vx < 0 and self.brakeAccel or -self.brakeAccel)
+    if math.abs(brake) > math.abs(vx) then
+      vx = 0
+    else
+      vx = vx + brake
+    end
 	end
 
-  -- The Jump code gets a lttle bit crazy.  Bare with me.
-  if love.keyboard.isDown("up", "w") then
-    if -self.yVelocity < self.jumpMaxSpeed and not self.hasReachedMax then
-      self.yVelocity = self.yVelocity - self.jumpAcc * dt
-    elseif math.abs(self.yVelocity) > self.jumpMaxSpeed then
-      self.hasReachedMax = true
+  self.xRelativeVelocity = vx
+
+  -- if we're grounded on a moving platform we need to move with that platform.
+  if self.ground then
+    groundAdjust = 0
+    if self.ground.xVelocity then
+      groundAdjust = self.ground.xVelocity
     end
 
-    self.isGrounded = false -- we are no longer in contact with the ground
+    self.xVelocity = self.xRelativeVelocity + groundAdjust
+  else
+    self.xVelocity = self.xRelativeVelocity
   end
 
-  -- these store the location the player will arrive at should
-  local goalX = self.x + self.xVelocity
-  local goalY = self.y + self.yVelocity
+  -- Do yVelocity logic
+  if love.keyboard.isDown("up", "space") then
 
-  -- Move the player while testing for collisions
-  self.x, self.y, collisions, len = self.world:move(self, goalX, goalY, self.collisionFilter)
 
-  -- Loop through those collisions to see if anything important is happening
-  for i, coll in ipairs(collisions) do
-    if coll.touch.y > goalY then  -- We touched below (remember that higher locations have lower y values) our intended target.
-      self.hasReachedMax = true -- this scenario does not occur in this demo
-      self.isGrounded = false
-    elseif coll.normal.y < 0 then
-      self.hasReachedMax = false
-      self.isGrounded = true
-    end
+  elseif not self.ground and self.state == PlayerStates.Jumping then
+    self.yVelocity = 0
+    self.state = PlayerStates.Idle
   end
+end
+
+function player:keypressed(key)
+  if key ~= "up" and key ~= "space" then
+    return
+  end
+
+  if self.ground then
+    self.state = PlayerStates.Jumping
+    self.jumpStartY = self.y
+  end
+
+  if (self.jumpStartY - self.y) < self.jumpMaxHeight then
+    self.yVelocity = -self.jumpImpulse -- no need to multiply by dt because this is instantaneous
+  else
+    self.yVelocity = 0
+  end
+end
+
+function player:keyreleased(key)
+  if key ~= "up" and key ~= "space" then
+    return
+  end
+
+
+end
+
+function player:move(dt)
+  local world = self.world
+
+  local goalX = self.x + self.xVelocity * dt
+  local goalY = self.y + self.yVelocity * dt
+
+  local actualX, actualY, collisions, len = world:check(self, goalX, goalY, self.filter)
+
+  for i, col in ipairs(collisions) do
+    self:changeVelocityByCollisionNormal(col)
+    self:checkIfOnGround(col.normal.y, col.other)
+  end
+
+  self.x, self.y = actualX, actualY
+  world:update(self, actualX, actualY)
+end
+
+function player:update(dt, index)
+  local prevX, prevY = self.x, self.y
+
+  -- Process inputs from the player.
+  self:playerInput(dt)
+
+  if not self.ground and self.state ~= PlayerStates.Jumping then
+    self.yVelocity = self.yVelocity + self.gravity * dt -- Apply gravity
+  end
+
+  self.ground = nil
+  self:move(dt)
 end
 
 function player:draw()
