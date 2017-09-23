@@ -16,3 +16,12 @@
 [submodule "3_making_levels/libs/hump"]
 	path = 3_making_levels/libs/hump
 	url = git@github.com:vrld/hump.git
+[submodule "4_better_player/libs/sti"]
+	path = 4_better_player/libs/sti
+	url = git@github.com:karai17/Simple-Tiled-Implementation.git
+[submodule "4_better_player/libs/bump"]
+	path = 4_better_player/libs/bump
+	url = git@github.com:kikito/bump.lua.git
+[submodule "4_better_player/libs/hump"]
+	path = 4_better_player/libs/hump
+	url = git@github.com:vrld/hump.git

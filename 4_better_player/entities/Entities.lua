@@ -45,6 +45,15 @@ function Entities:clear()
 end
 
 function Entities:draw()
+	if self.map ~= nil then
+		local camWorldWidth = love.graphics.getWidth() / cam.scale
+		local camWorldHeight = love.graphics.getHeight() / cam.scale
+		local camWorldX = cam.x - (camWorldWidth / 2)
+		local camWorldY = cam.y - (camWorldHeight / 2)
+		self.map:setDrawRange(camWorldX, camWorldY, love.graphics.getWidth(), love.graphics.getHeight())
+		self.map:draw()
+	end
+
 	for i, e in ipairs(self.entityList) do
 		e:draw(i)
 	end

@@ -25,7 +25,7 @@ end
 function gameLevel1:enter()
   Entities:enter()
 
-  player = Player(self.world,  32, 64)
+  player = Player(self.world,  16, 16)
   Entities:add(player)
 end
 
@@ -45,14 +45,10 @@ function gameLevel1:update(dt)
 end
 
 function gameLevel1:draw()
-
-  -- Attach the camera before drawing the entities
-  --self.cam:attach()
-
+  self.cam:attach()
   self.map:draw() -- Remember that we inherited map from LevelBase
   Entities:draw() -- this executes the draw function for each individual Entity
-
-  --self.cam:detach()
+  self.cam:detach()
 end
 
 -- All levels will have a pause menu

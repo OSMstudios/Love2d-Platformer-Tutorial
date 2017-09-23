@@ -13,10 +13,9 @@ local LevelBase = Class{
 }
 
 function LevelBase:init(mapFile)
-  self.cam = Camera(0, 0) -- place in a neutral position
+  self.cam = Camera(0, 0, 3) -- place in a neutral position and zoom 3 times
   self.map = sti(mapFile, { "bump" })
-  self.world = bump.newWorld(32)
-  self.map:resize(love.graphics.getWidth(), love.graphics.getHeight())
+  self.world = bump.newWorld(16)
 
   self.map:bump_init(self.world)
 end

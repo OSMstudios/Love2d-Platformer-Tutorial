@@ -1,3 +1,5 @@
+debug = true -- Add a quick flag to handle our development process.  Set to false before packaging
+
 -- Pull in the Bump library
 bump = require 'libs.bump.bump'
 
@@ -15,11 +17,7 @@ function love.load()
 end
 
 function love.keypressed(key)
-  if key == "escape" then
+  if debug and key == "escape" then
 		love.event.push("quit")
 	end
-
-  if Gamestate.current() ~= mainMenu and Gamestate.current() ~= pause and key == 'p' then
-    Gamestate.push(pause)
-  end
 end
