@@ -4,20 +4,24 @@
 local bump = require 'libs.bump.bump'
 local Gamestate = require 'libs.hump.gamestate'
 local Class = require 'libs.hump.class'
-local sti = require 'libs.sti.sti'
+local sti = require 'libs.sti.sti' -- New addition here
+local Entities = require 'entities.Entities'
+local camera = require 'libs.camera' -- New addition here
 
 local LevelBase = Class{
-  __includes = Gamestate
+  __includes = Gamestate,
+  init = function(self, mapFile)
+    self.map = sti(mapFile, { 'bump' })
+    self.world = bump.newWorld(32)
+    self.map:resize(love.graphics.getWidth(), love.graphics.getHeight())
+
+    self.map:bump_init(self.world)
+
+    Entities:enter()
+  end;
+  Entities = Entities;
+  camera = camera
 }
-
-function LevelBase:init(mapFile)
-  self.camera = require 'libs.camera'
-  self.map = sti(mapFile, { "bump" })
-  self.world = bump.newWorld(32)
-  self.map:resize(love.graphics.getWidth(), love.graphics.getHeight())
-
-  self.map:bump_init(self.world)
-end
 
 -- All levels will have a pause menu
 function LevelBase:keypressed(key)
