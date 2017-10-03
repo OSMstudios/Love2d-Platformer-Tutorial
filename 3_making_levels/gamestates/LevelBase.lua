@@ -23,8 +23,8 @@ local LevelBase = Class{
   camera = camera
 }
 
--- All levels will have a pause menu
 function LevelBase:keypressed(key)
+  -- All levels will have a pause menu
   if Gamestate.current() ~= pause and key == 'p' then
     Gamestate.push(pause)
   end
