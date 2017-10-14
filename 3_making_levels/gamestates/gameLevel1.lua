@@ -45,11 +45,7 @@ end
 
 -- All levels will have a pause menu
 function gameLevel1:keypressed(key)
-  LevelBase.Entities:keypressed(key)
-end
-
-function gameLevel1:keyreleased(key)
-  LevelBase.Entities:keyreleased(key)
+  LevelBase:keypressed(key)
 end
 
 return gameLevel1
