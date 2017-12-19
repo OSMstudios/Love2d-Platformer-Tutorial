@@ -18,8 +18,8 @@ local LevelBase = Class{
     self.map:bump_init(self.world)
 
     Entities:enter()
-  end;
-  Entities = Entities;
+  end,
+  Entities = Entities,
   camera = camera
 }
 

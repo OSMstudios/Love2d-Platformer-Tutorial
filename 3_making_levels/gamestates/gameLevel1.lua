@@ -35,10 +35,8 @@ end
 function gameLevel1:draw()
   -- Attach the camera before drawing the entities
   camera:set()
-
-  self.map:draw() -- Remember that we inherited map from LevelBase
+  self.map:draw(-camera.x, -camera.y) -- Remember that we inherited map from LevelBase
   LevelBase.Entities:draw() -- this executes the draw function for each individual Entity
-
   camera:unset()
   -- Be sure to detach after running to avoid weirdness
 end
